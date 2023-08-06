@@ -3,6 +3,7 @@ package de.selfmade4u.localfirstpeertopeer.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -19,8 +20,14 @@ import androidx.core.view.WindowCompat
 fun LocalFirstPeerToPeerTheme(
     content: @Composable () -> Unit
 ) {
-    MaterialTheme(
+    val colors = if (!isSystemInDarkTheme()) {
+        lightColorScheme()
+    } else {
+        darkColorScheme()
+    }
 
+    MaterialTheme(
+        colorScheme = colors,
         content = content
     )
 }
