@@ -16,18 +16,36 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.room.ColumnInfo
+import androidx.room.Dao
+import androidx.room.Database
+import androidx.room.Delete
+import androidx.room.Entity
+import androidx.room.Insert
+import androidx.room.PrimaryKey
+import androidx.room.Query
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import de.selfmade4u.localfirstpeertopeer.ui.theme.LocalFirstPeerToPeerTheme
 
 // https://developer.android.com/jetpack/compose/tutorial
@@ -38,15 +56,58 @@ import de.selfmade4u.localfirstpeertopeer.ui.theme.LocalFirstPeerToPeerTheme
 // https://developer.android.com/guide/topics/connectivity/wifip2p
 // https://developer.android.com/training/connect-devices-wirelessly/nsd-wifi-direct
 // https://developers.google.com/nearby/connections/overview
+// https://developer.android.com/jetpack/compose/state-saving
+// https://developer.android.com/jetpack/compose/layouts/material
+// https://developer.android.com/training/data-storage
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "database-name"
+        ).build()
+        val userDao = db.userDao()
+        val users: List<User> = userDao.getAll()
+
         setContent {
             lihefw()
         }
     }
 }
 
+@Entity
+data class User(
+    @PrimaryKey val uid: Int,
+    @ColumnInfo(name = "first_name") val firstName: String?,
+    @ColumnInfo(name = "last_name") val lastName: String?
+)
+
+@Dao
+interface UserDao {
+    @Query("SELECT * FROM user")
+    fun getAll(): List<User>
+
+    @Query("SELECT * FROM user WHERE uid IN (:userIds)")
+    fun loadAllByIds(userIds: IntArray): List<User>
+
+    @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
+            "last_name LIKE :last LIMIT 1")
+    fun findByName(first: String, last: String): User
+
+    @Insert
+    fun insertAll(vararg users: User)
+
+    @Delete
+    fun delete(user: User)
+}
+
+@Database(entities = [User::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun userDao(): UserDao
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun lihefw() {
@@ -64,6 +125,13 @@ fun lihefw() {
                     Text("gotofriendslist")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
+                var text by rememberSaveable { mutableStateOf(TextFieldValue("")) }
+                TextField(
+                    value = text,
+                    onValueChange = {
+                            newText -> text = newText
+                    }
+                )
 
                 NavHost(navController = navController, startDestination = "profile") {
                     composable("profile") {  MessageCard(Message("profile", "Hi")) }
