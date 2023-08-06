@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,6 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import de.selfmade4u.localfirstpeertopeer.ui.theme.LocalFirstPeerToPeerTheme
 
 // https://developer.android.com/jetpack/compose/tutorial
@@ -38,15 +42,35 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            lihefw()
+        }
+    }
+}
 
-            LocalFirstPeerToPeerTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    MessageCard(Message("Moritz", "Hi"))
+@Preview
+@Composable
+fun lihefw() {
+    val navController = rememberNavController()
+
+    LocalFirstPeerToPeerTheme {
+        // A surface container using the 'background' color from the theme
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Column {
+                Button(onClick = {
+                    navController.navigate("friendslist")
+                }) {
+                    Text("gotofriendslist")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+
+                NavHost(navController = navController, startDestination = "profile") {
+                    composable("profile") {  MessageCard(Message("profile", "Hi")) }
+                    composable("friendslist") { MessageCard(Message("friendslist", "Hi")) }
                 }
             }
+
         }
     }
 }
