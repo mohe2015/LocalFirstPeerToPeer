@@ -122,10 +122,10 @@ fun lihefw() {
                 Button(onClick = {
                     navController.navigate("friendslist")
                 }) {
-                    Text("gotofriendslist")
+                    Text("tdfsf")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                var text by rememberSaveable { mutableStateOf(TextFieldValue("")) }
+                var text by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
                 TextField(
                     value = text,
                     onValueChange = {
