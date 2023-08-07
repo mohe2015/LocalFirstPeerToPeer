@@ -62,14 +62,14 @@ import de.selfmade4u.localfirstpeertopeer.ui.theme.LocalFirstPeerToPeerTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+/*
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "database-name"
         ).build()
         val userDao = db.userDao()
         val users: List<User> = userDao.getAll()
-
+*/
         setContent {
             lihefw()
         }
